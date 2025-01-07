@@ -1,17 +1,27 @@
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import Navbar from "./Navbar";
 import { ProductData } from "../context/Product";
 import Loading from "./Loading";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 const Home = () => {
+  const [filter, setFilter] = useState("");
   const { product } = useContext(ProductData);
+  const category = new URLSearchParams(useLocation().search).get("categories");
+  useEffect(() => {
+    setFilter(category || "");
+  }, [category]);
+
+  const filteredProduct = product?.filter((item) =>
+    item.category.toLowerCase().includes(filter.toLowerCase())
+  );
+
   return (
     <div className="flex h-screen">
       <Navbar />
-      {product ? (
+      {filteredProduct ? (
         <div className="w-full px-16 py-10 flex justify-center flex-wrap gap-10 overflow-x-hidden overflow-y-auto mx-auto">
-          {product.map((item, idx) => (
+          {filteredProduct.map((item, idx) => (
             <Link
               to={`/details/${item.id}`}
               key={idx}
